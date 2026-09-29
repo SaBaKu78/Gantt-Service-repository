@@ -46,6 +46,7 @@ function repository(overrides: Partial<IAssignmentRepository> = {}): IAssignment
   return {
     findTaskForUpdateById: async () => task,
     findResource: async () => resource,
+    findResourceForUpdateById: async () => resource,
     findShift: async () => shift,
     findById: async () => record,
     findAssignmentById: async () => record,

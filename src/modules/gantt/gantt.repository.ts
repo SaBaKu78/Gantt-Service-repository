@@ -85,6 +85,7 @@ export class GanttRepository implements IGanttRepository {
       where,
       select: {
         id: true,
+        currentAssignmentId: true,
         taskName: true,
         taskTypeId: true,
         taskTypeName: true,

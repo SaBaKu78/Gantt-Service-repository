@@ -98,6 +98,7 @@ export class GanttService {
       for (const task of tasks) {
         const assignment = selectCurrentAssignment(
           assignmentByTasks.get(String(task.id)) ?? [],
+          task.currentAssignmentId,
         )
         const taskBar = toTaskBar(task, assignment)
         if (
@@ -178,16 +179,25 @@ export class GanttService {
 
 }
 
-function selectCurrentAssignment(assignments: any[]) {
-  return (
-    assignments
-      .filter((assignment) =>
-        isActiveAssignment(assignment.status, assignment.deleted),
-      )
-      .sort((a, b) => {
-        return b.assignedAt.getTime() - a.assignedAt.getTime()
-      })[0] ?? null
+function selectCurrentAssignment(
+  assignments: GanttAssignment[],
+  currentAssignmentId: bigint | null | undefined,
+) {
+  // Undefined is tolerated for older in-memory adapters; Prisma returns null
+  // for an unassigned task, which must never fall back to assignment history.
+  if (currentAssignmentId === undefined) {
+    return assignments.find((candidate) =>
+      isActiveAssignment(candidate.status, candidate.deleted),
+    ) ?? null
+  }
+  if (currentAssignmentId === null) return null
+
+  const assignment = assignments.find(
+    (candidate) => candidate.id === currentAssignmentId,
   )
+  return assignment && isActiveAssignment(assignment.status, assignment.deleted)
+    ? assignment
+    : null
 }
 
 function toTaskBar(task: any, assignment: any): GanttTaskBar {

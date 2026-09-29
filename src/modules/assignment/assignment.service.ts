@@ -35,9 +35,13 @@ export class AssignmentService {
     const commit = await this.unitOfWork.execute(
       async (transaction) => {
         const repository = this.repositoryFactory.create(transaction)
+        // Lock order is part of the write contract: Task first, Resource second.
+        // Other write paths must use the same order to avoid lock cycles.
         const task = await repository.findTaskForUpdateById(query.taskId)
         assertTaskCanBeAssigned(task)
-        const resource = await repository.findResource(query.resourceId)
+        // Lock the resource before checking overlap so concurrent assignments
+        // for the same resource cannot pass the check at the same time.
+        const resource = await repository.findResourceForUpdateById(query.resourceId)
         assertResourceCanBeAssigned(resource)
         const shiftDaily = await repository.findShift(query.shiftDailyId)
         assertShiftCoversTask(

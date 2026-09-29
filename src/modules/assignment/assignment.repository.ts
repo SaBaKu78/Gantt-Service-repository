@@ -45,6 +45,31 @@ export class AssignmentRepository implements IAssignmentRepository {
     return row ? { ...row, resourceExternalId: row.relatedExternalId } : null
   }
 
+  /**
+   * Lock the resource row for the duration of the assignment transaction.
+   * This serializes concurrent assignments targeting the same resource.
+   */
+  async findResourceForUpdateById(resourceId: bigint): Promise<AssignmentResource | null> {
+    const rows = await this.prisma.$queryRaw<Array<{
+      id: bigint
+      code: string
+      name: string
+      displayName: string
+      relatedExternalId: string
+      resourceGroupId: bigint
+      resourceStatus: string
+      displayed: boolean
+    }>>`
+      SELECT id, code, name, displayName, relatedExternalId,
+             resourceGroupId, resourceStatus, displayed
+      FROM resources
+      WHERE id = ${resourceId}
+      FOR UPDATE
+    `
+    const row = rows[0]
+    return row ? { ...row, resourceExternalId: row.relatedExternalId } : null
+  }
+
   async findShift(shiftId: bigint): Promise<AssignmentShift | null> {
     const row = await this.prisma.shiftDaily.findUnique({
       where: { id: shiftId },

@@ -20,6 +20,8 @@ export type GanttShift = {
 
 export type GanttTask = {
   id: bigint
+  // Task is the authoritative pointer to the current assignment.
+  currentAssignmentId: bigint | null
   taskName: string
   taskTypeId: bigint
   taskTypeName: string

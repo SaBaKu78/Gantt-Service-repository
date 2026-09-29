@@ -63,6 +63,7 @@ export interface AppendEventInput {
 
 export interface IAssignmentRepository {
   findTaskForUpdateById(taskId: bigint): Promise<AssignmentTask | null>
+  findResourceForUpdateById(resourceId: bigint): Promise<AssignmentResource | null>
   findResource(resourceId: bigint): Promise<AssignmentResource | null>
   findShift(shiftId: bigint): Promise<AssignmentShift | null>
   findAssignmentById(id: bigint): Promise<AssignmentRecord | null>
