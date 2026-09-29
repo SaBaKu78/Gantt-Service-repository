@@ -1,0 +1,20 @@
+// 通用领域事件/Outbox 表。
+// 业务状态和事件在同一个事务中写入，提交后可由通知任务可靠投递。
+model DomainEvent {
+  id            BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  eventType     String   @db.VarChar(64)
+  aggregateType String   @db.VarChar(64)
+  aggregateId   BigInt   @db.UnsignedBigInt
+  payload       Json
+  occurredAt    DateTime @db.DateTime(3)
+  published     Boolean  @default(false)
+  publishedAt   DateTime? @db.DateTime(3)
+  retryCount    Int      @default(0)
+  lastError     String?  @db.Text
+  createdAt     DateTime @default(now()) @db.DateTime(3)
+
+  @@index([aggregateType, aggregateId])
+  @@index([eventType, occurredAt])
+  @@index([published, createdAt])
+  @@map("domain_events")
+}

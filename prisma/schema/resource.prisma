@@ -1,0 +1,66 @@
+model Resource {
+  id                                   BigInt    @id @db.UnsignedBigInt
+  code                                 String    @db.VarChar(32)
+  name                                 String    @db.VarChar(100)
+  shortName                            String    @db.VarChar(100)
+  displayName                          String    @db.VarChar(100)
+  openingTime                          String    @db.Char(5)
+  closingTime                          String    @db.Char(5)
+  isCrossDay                           Boolean   @default(false)
+  resourceCategoryCode                 String    @db.VarChar(32)
+  resourceTypeCode                     String    @db.VarChar(32)
+  resourceStatus                       String    @db.VarChar(32)
+  patternId                            Int
+  priority                             Int       @default(0)
+  dispatched                           Int       @default(0)
+  resourceLinkId                       Int
+  resourceGroupId                      BigInt    @db.UnsignedBigInt
+  bindRelatedResourceTypeCode          Json
+  latestLongitude                      Decimal?  @db.Decimal(10, 7)
+  latestLatitude                       Decimal?  @db.Decimal(10, 7)
+  latestPositionChangeTime             DateTime? @db.DateTime(3)
+  dataSource                           String    @db.VarChar(32)
+  relatedExternalId                    String    @db.VarChar(64)
+  selfModifiedFlag                     Int       @default(0)
+  displayed                            Boolean   @default(true)
+  displayOrder                         Int       @default(0)
+  airportCode                          String    @db.VarChar(8)
+  businessType                         Int
+  coeft                                Decimal?  @db.Decimal(10, 4)
+  departmentId                         Int
+  organizationId                       Int
+  updateUserId                         Int
+  updateTime                           DateTime  @db.DateTime(3)
+  expandProperties                     Json
+  tagIds                               Json
+  resourceLink                         Json
+  labelNames                           Json
+  lazyLoadFlags                        Json
+  resourceWorkLocationList             Json
+  vehicleTypeName                      String    @db.VarChar(100)
+  vehicleTypeDisplayOrder              Int       @default(100)
+  allVehicle                           Json
+  calculatedRelatedResourceName        String    @db.VarChar(100)
+  calculatedRelatedResourceDisplayName String    @db.VarChar(100)
+  currentRelatedResourceId             BigInt?   @db.UnsignedBigInt
+  currentRelatedResourceName           String?   @db.VarChar(100)
+  currentRelatedResourceDisplayName    String?   @db.VarChar(100)
+  vehicleType                          String?   @db.VarChar(32)
+  calculatedRelatedResourceId          BigInt?   @db.UnsignedBigInt
+  bindRelatedResourceId                BigInt?   @db.UnsignedBigInt
+  bindRelatedResourceId1               BigInt?   @db.UnsignedBigInt
+  bindRelatedResourceName              String?   @db.VarChar(100)
+  bindRelatedResourceDisplayName       String?   @db.VarChar(100)
+  createdAt                            DateTime  @default(now()) @db.DateTime(3)
+  syncedAt                             DateTime  @updatedAt @db.DateTime(3)
+
+  assignments  Assignment[]
+  shiftDailies ShiftDaily[]
+
+  @@unique([code])
+  @@index([airportCode, resourceCategoryCode, resourceStatus])
+  @@index([resourceGroupId])
+  @@index([displayed, displayOrder])
+  @@index([relatedExternalId])
+  @@map("resources")
+}

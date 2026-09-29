@@ -1,0 +1,48 @@
+model ShiftDaily {
+  id                      BigInt   @id @db.UnsignedBigInt
+  shiftDate               DateTime @db.DateTime(3)
+  dailyOnOff              Int
+  shiftId                 BigInt   @db.BigInt
+  shiftName               String   @db.VarChar(255)
+  patternId               Int
+  manual                  Boolean
+  leadin                  Boolean
+  resourceId              BigInt   @db.UnsignedBigInt
+  resourceGroupId         BigInt   @db.BigInt
+  relatedResourceId       BigInt   @db.BigInt
+  relatedResourceTypeCode String   @db.VarChar(32)
+  scheduleShiftStartTime  DateTime @db.DateTime(3)
+  scheduleShiftEndTime    DateTime @db.DateTime(3)
+  estimatedShiftStartTime DateTime @db.DateTime(3)
+  estimatedShiftEndTime   DateTime @db.DateTime(3)
+  actualStartTime         DateTime @db.DateTime(3)
+  actualEndTime           DateTime @db.DateTime(3)
+  startTime               String?  @db.VarChar(32)
+  endTime                 String?  @db.VarChar(32)
+  isCrossDay              Boolean
+  backup                  Boolean
+  actualAttendanceType    Int
+  actualAttendanceStatus  Int
+  actualLeaveType         Int
+  actualCardRecordStatus  Int
+  locationAreaId          Int
+  overtimeCode            String   @db.VarChar(32)
+  overtimeReason          String   @db.Text
+  leaveCode               String   @db.VarChar(32)
+  leaveReason             String   @db.Text
+  businessType            Int
+  departmentId            Int
+  organizationId          Int
+  updateUserId            Int
+  updateTime              DateTime @db.DateTime(3)
+  leaveTimeVoList         Json
+  calculatedStartTime     DateTime @db.DateTime(3)
+  calculatedEndTime       DateTime @db.DateTime(3)
+
+  resource    Resource     @relation(fields: [resourceId], references: [id], onDelete: Restrict)
+  assignments Assignment[]
+
+  @@index([resourceId, scheduleShiftStartTime, scheduleShiftEndTime])
+  @@index([shiftDate])
+  @@map("shift_daily")
+}

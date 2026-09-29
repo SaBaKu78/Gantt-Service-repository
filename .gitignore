@@ -1,0 +1,14 @@
+node_modules
+
+# Local secrets and machine-specific configuration
+.env
+.env.*
+!.env.example
+
+# Generated/runtime output
+/generated/prisma
+coverage
+dist
+*.log
+*.sql.gz
+*.dump

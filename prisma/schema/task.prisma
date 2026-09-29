@@ -1,0 +1,204 @@
+model Task {
+  id                                BigInt    @id @db.UnsignedBigInt
+  taskName                          String    @db.VarChar(255)
+  taskDate                          DateTime  @db.DateTime(3)
+  estimatedPrepareTime              Int
+  estimatedStartTimeInMinutes       Int?
+  estimatedEndTimeInMinutes         Int?
+  actualStartTime                   DateTime? @db.DateTime(3)
+  actualEndTime                     DateTime? @db.DateTime(3)
+  schedulePrepareTime               Int // 任务计划准备时长，单位由上游任务数据约定
+  scheduleStartTime                 DateTime  @db.DateTime(3) // 计划执行开始时间
+  scheduleEndTime                   DateTime  @db.DateTime(3) // 计划执行结束时间
+  scheduleDuration                  Int // 计划执行时长，不等同于时间区间的毫秒数
+  scheduleTravelTime                Int // 执行前的计划行程时长
+  estimatedStartTripTime            DateTime? @db.DateTime(3)
+  estimatedStartTripTimeInMinutes   Int?
+  estimatedTravelTime               Int
+  actualStartTripTime               DateTime? @db.DateTime(3)
+  scheduled                         Boolean?
+  fromLocationId                    Int?
+  toLocationId                      BigInt?   @db.BigInt
+  fromLocation                      String?   @db.VarChar(255)
+  toLocation                        String?   @db.VarChar(255)
+  fromLocationTypeCode              String?   @db.VarChar(255)
+  toLocationTypeCode                String?   @db.VarChar(255)
+  fromLocationAreaId                Int?
+  taskTypeId                        BigInt    @db.BigInt
+  taskGroupType                     Int
+  taskRuleCategory                  String    @db.VarChar(32)
+  priority                          Int
+  weight                            Int
+  taskCredit                        Int
+  taskCreditRatio                   Int
+  mustDispatch                      Boolean
+  selfModifiedFlag                  Int
+  locked                            Boolean // 任务是否被业务锁定；锁定任务不可被重新派遣
+  appJudgeStatus                    String    @db.VarChar(32)
+  taskStatus                        Int // 任务自身状态，不表示派遣生命周期状态
+  taskStatusChangeTime              DateTime  @db.DateTime(3)
+  splitted                          Boolean
+  splittedFlag                      Int
+  source                            Int
+  taskSequenceNumber                Int
+  taskSequenceFlag                  Int
+  isWorkTask                        Boolean
+  isReservedTask                    Boolean?
+  notifyStatus                      Int
+  notifyTime                        DateTime? @db.DateTime(3)
+  notifyAckTime                     DateTime? @db.DateTime(3)
+  processFlag                       Int
+  baseQualifications                String?   @db.VarChar(32)
+  baseRelatedQualifications         String    @db.VarChar(32)
+  flightId                          BigInt    @db.BigInt
+  taskTime                          DateTime  @db.DateTime(3)
+  lastTaskTime                      DateTime  @db.DateTime(3)
+  parentId                          Int
+  fromLocationArea                  String?   @db.VarChar(255)
+  toLocationIntDomType              String?   @db.VarChar(255)
+  expandProperties                  Json
+  tagIds                            Json
+  // 当前有效派遣的冗余快照。它们描述 Task 当前指向的资源，不是派遣历史。
+  currentAssignmentId               BigInt?   @unique @db.UnsignedBigInt // 当前有效 Assignment 的 ID；为空表示当前未派遣
+  currentAssignmentStatus           String?   @db.VarChar(32) // 当前 Assignment 状态，如 ASSIGNED、WORKING、COMPLETED
+  currentAssignmentVersion          Int? // 当前 Assignment 的并发控制版本
+  currentShiftDailyId               BigInt?   @db.UnsignedBigInt // 当前有效派遣使用的班次实例
+  currentResourceId                 BigInt?   @db.BigInt // 当前有效派遣对应的资源 ID
+  currentResourceName               String?   @db.VarChar(255) // 当前资源业务名称快照
+  currentResourceDisplayName        String?   @db.VarChar(255) // 当前资源展示名称快照
+  currentRelatedResourceId          BigInt?   @db.BigInt
+  currentRelatedResourceName        String?   @db.VarChar(255)
+  currentRelatedResourceDisplayName String?   @db.VarChar(255)
+  currentRelatedResourceOther2      String?   @db.VarChar(255)
+  oldResourceDisplayName            String?   @db.VarChar(255)
+  oldRelatedResourceDisplayName     String?   @db.VarChar(255)
+  taskAssignUserId                  Int? // 最近一次任务派遣操作人
+  taskAssignUserName                String?   @db.VarChar(255)
+  taskAssignUpdateTime              DateTime? @db.DateTime(3) // 最近一次任务派遣变更时间
+  taskAssignCreateUserId            Int?
+  taskAssignCreateUserName          String?   @db.VarChar(255)
+  taskAssignCreateTime              DateTime? @db.DateTime(3)
+  flightNum                         String?   @db.VarChar(32)
+  flightIntDomType                  String?   @db.VarChar(32)
+  flightIoFlag                      String?   @db.VarChar(32)
+  businessType                      Int
+  departmentId                      BigInt    @db.BigInt
+  organizationId                    Int
+  updateUserId                      Int
+  updateUserName                    String    @db.VarChar(255)
+  updateTime                        DateTime  @db.DateTime(3)
+  createUserId                      Int
+  createUserName                    String    @db.VarChar(255)
+  createTime                        DateTime  @db.DateTime(3)
+  bodyType                          String?   @db.VarChar(32)
+  aircraftClass                     String?   @db.VarChar(32)
+  taskTypeName                      String    @db.VarChar(255)
+  inFlightId                        BigInt    @db.BigInt
+  outFlightId                       BigInt    @db.BigInt
+  terminalBuilding                  String?   @db.VarChar(32)
+  inFlightNum                       String?   @db.VarChar(32)
+  inFlightDate                      DateTime? @db.DateTime(3)
+  inFlightIntDomType                String?   @db.VarChar(32)
+  inFlightAircraft                  String?   @db.VarChar(32)
+  inFlightAircraftIata              String?   @db.VarChar(32)
+  relatedFlightId                   Int
+  inBoundFlightDate                 DateTime? @db.DateTime(3)
+  inBoundSta                        DateTime? @db.DateTime(3)
+  inBoundEta                        DateTime? @db.DateTime(3)
+  inBoundAta                        DateTime? @db.DateTime(3)
+  inBoundStd                        DateTime? @db.DateTime(3)
+  inBoundAtd                        DateTime? @db.DateTime(3)
+  inBoundIoFlag                     String?   @db.VarChar(32)
+  inBoundFlightStatus               Int?
+  inBoundFlightMissionProperty      String?   @db.VarChar(32)
+  inBoundStandName                  String?   @db.VarChar(255)
+  inBoundStandType                  String?   @db.VarChar(32)
+  inBoundStandApronId               Int?
+  inBoundStandApronName             String?   @db.VarChar(255)
+  inBoundStandApronCode             String?   @db.VarChar(32)
+  inBoundBodyType                   String?   @db.VarChar(32)
+  inBoundAircraft                   String?   @db.VarChar(32)
+  inBoundAircraftIata               String?   @db.VarChar(32)
+  inBoundRegistrationNumber         String?   @db.VarChar(32)
+  inBoundFirstDeparturePaxNum       Int?
+  inBoundClubDeparturePaxNum        Int?
+  inBoundEcoDeparturePaxNum         Int?
+  inBoundDeparturePaxNum            Int?
+  inBoundSpecialServicePaxNum       Int?
+  inBoundThroughPaxNum              Int?
+  inBoundFirstBaggageWeight         Int?
+  inBoundClubBaggageWeight          Int?
+  inBoundEcoBaggageWeight           Int?
+  inBoundBaggageWeight              Int?
+  inBoundUnaccompaniedPaxNum        Int?
+  taskRegistrationNumber            String?   @db.VarChar(32)
+  haveRemark                        Boolean
+  deleted                           Boolean
+  grabOrder                         Boolean
+  calculatedStartTime               DateTime  @db.DateTime(3)
+  calculatedEndTime                 DateTime  @db.DateTime(3)
+  calculatedFromLocation            String?   @db.VarChar(255)
+  calculatedToLocation              String?   @db.VarChar(255)
+  calculatedIntDomType              String?   @db.VarChar(32)
+  fromLocationManual                String?   @db.VarChar(255)
+  toLocationManual                  String?   @db.VarChar(255)
+  taskCancelTime                    DateTime? @db.DateTime(3)
+  relatedExternalSourceId           String?   @db.VarChar(32)
+  description                       String?   @db.Text
+  sourceTaskId                      BigInt?   @db.BigInt
+  isReportedTask                    Boolean?
+  fleetType                         String?   @db.VarChar(32)
+  outFlightNum                      String?   @db.VarChar(32)
+  outFlightDate                     DateTime? @db.DateTime(3)
+  outFlightIntDomType               String?   @db.VarChar(32)
+  outFleetType                      String?   @db.VarChar(32)
+  outBoundFlightDate                DateTime? @db.DateTime(3)
+  outBoundSta                       DateTime? @db.DateTime(3)
+  outBoundEta                       DateTime? @db.DateTime(3)
+  outBoundStd                       DateTime? @db.DateTime(3)
+  outBoundAtd                       DateTime? @db.DateTime(3)
+  outBoundIoFlag                    String?   @db.VarChar(32)
+  outBoundFlightStatus              Int?
+  outBoundFlightMissionProperty     String?   @db.VarChar(32)
+  outBoundStandName                 String?   @db.VarChar(255)
+  outBoundStandType                 String?   @db.VarChar(32)
+  outBoundStandApronId              Int?
+  outBoundStandApronName            String?   @db.VarChar(255)
+  outBoundStandApronCode            String?   @db.VarChar(32)
+  outBoundBodyType                  String?   @db.VarChar(32)
+  outBoundAircraft                  String?   @db.VarChar(32)
+  outBoundAircraftIata              String?   @db.VarChar(32)
+  outBoundRegistrationNumber        String?   @db.VarChar(32)
+  outBoundFirstDeparturePaxNum      Int?
+  outBoundClubDeparturePaxNum       Int?
+  outBoundEcoDeparturePaxNum        Int?
+  outBoundDeparturePaxNum           Int?
+  outBoundSpecialServicePaxNum      Int?
+  outBoundThroughPaxNum             Int?
+  outBoundFirstBaggageWeight        Int?
+  outBoundClubBaggageWeight         Int?
+  outBoundEcoBaggageWeight          Int?
+  outBoundBaggageWeight             Int?
+  outBoundUnaccompaniedPaxNum       Int?
+  allowBoardingTime                 DateTime? @db.DateTime(3)
+  doorCloseTime                     DateTime? @db.DateTime(3)
+  inFleetType                       String?   @db.VarChar(32)
+  toLocationAreaId                  Int?
+  toLocationArea                    String?   @db.VarChar(255)
+  fromLocationIntDomType            String?   @db.VarChar(255)
+  outFlightAircraft                 String?   @db.VarChar(32)
+  outFlightAircraftIata             String?   @db.VarChar(32)
+  outBoundEtd                       DateTime? @db.DateTime(3)
+  baseQualificationIds              String?   @db.VarChar(32)
+  baseRelatedQualificationIds       String?   @db.VarChar(32)
+  inBoundEtd                        DateTime? @db.DateTime(3)
+
+  assignments Assignment[] @relation("TaskAssignments") // 该任务的全部派遣历史；currentAssignmentId 指向其中当前有效记录
+
+  @@index([flightId, scheduleStartTime])
+  @@index([taskDate, taskStatus])
+  @@index([scheduleStartTime, scheduleEndTime])
+  @@index([taskTypeId])
+  @@index([currentResourceId, currentShiftDailyId])
+  @@map("tasks")
+}

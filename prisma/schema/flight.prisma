@@ -1,0 +1,141 @@
+model Flight {
+  id                                   BigInt    @id @db.UnsignedBigInt
+  flightNum                            String    @db.VarChar(32)
+  flightDate                           DateTime  @db.DateTime(3)
+  flightMissionProperty                String    @db.VarChar(32)
+  aircraft                             String    @db.VarChar(32)
+  aircraftIata                         String    @db.VarChar(32)
+  intDomType                           String    @db.VarChar(32)
+  isRegionFlight                       Boolean
+  vipFlag                              Int
+  ioFlag                               String    @db.VarChar(32)
+  arrivalAirport                       String    @db.VarChar(32)
+  departureAirport                     String    @db.VarChar(32)
+  sta                                  DateTime  @db.DateTime(3)
+  eta                                  DateTime  @db.DateTime(3)
+  ata                                  DateTime  @db.DateTime(3)
+  std                                  DateTime  @db.DateTime(3)
+  atd                                  DateTime  @db.DateTime(3)
+  registrationNumber                   String    @db.VarChar(32)
+  bodyType                             String    @db.VarChar(32)
+  aircraftClass                        String    @db.VarChar(32)
+  fleetType                            String    @db.VarChar(32)
+  standId                              Int
+  standName                            String    @db.VarChar(255)
+  standType                            String    @db.VarChar(32)
+  standAreaId                          Int
+  standAreaName                        String    @db.VarChar(255)
+  selfTaxiStand                        Boolean
+  standApronId                         Int
+  standApronCode                       String    @db.VarChar(32)
+  standApronName                       String    @db.VarChar(255)
+  airportRunway                        String    @db.VarChar(32)
+  terminalBuilding                     String    @db.VarChar(32)
+  terminalBuildingId                   Int
+  baggageCarouselName                  String    @db.VarChar(255)
+  baggageTurntableName                 String    @db.VarChar(255)
+  flightStatus                         Int
+  hasDomPaxIntFlight                   Boolean
+  serviceTypeCode                      String    @db.VarChar(32)
+  airportCode                          String    @db.VarChar(32)
+  airlineCode                          String    @db.VarChar(32)
+  airlineIcaoCode                      String    @db.VarChar(32)
+  isStopover                           Boolean
+  flightRoute                          String    @db.VarChar(32)
+  flightRouteCn                        String    @db.VarChar(32)
+  uniqueId                             String    @db.VarChar(64)
+  relatedExternalId                    String    @db.VarChar(64)
+  isPlanCancel                         Boolean
+  updateUserId                         Int
+  updateTime                           DateTime  @db.DateTime(3)
+  tagIds                               Json
+  expandProperties                     Json
+  boardFirstPaxNum                     Int
+  boardClubPaxNum                      Int
+  boardEcoPaxNum                       Int
+  firstPaxNum                          Int
+  clubPaxNum                           Int
+  ecoPaxNum                            Int
+  boardCipPaxNum                       Int
+  cipPaxNum                            Int
+  boardSuperCipPaxNum                  Int
+  superCipPaxNum                       Int
+  ecoClassCipPaxNum                    Int
+  highClassCipPaxNum                   Int
+  boardHighClassCipPaxNum              Int
+  boardEcoClassCipPaxNum               Int
+  boardPaxNum                          Int
+  paxNum                               Int
+  pnrFirstPaxNum                       Int
+  pnrClubPaxNum                        Int
+  pnrEcoPaxNum                         Int
+  pnrHighClassCipPaxNum                Int
+  pnrEcoClassCipPaxNum                 Int
+  pnrSpecialServicePaxNum              Int
+  pnrThroughPaxNum                     Int
+  pnrUnaccompaniedPaxNum               Int
+  cpaxFirstPaxNum                      Int
+  cpaxClubPaxNum                       Int
+  cpaxEcoPaxNum                        Int
+  cpaxHighClassCipPaxNum               Int
+  cpaxEcoClassCipPaxNum                Int
+  cpaxSpecialServicePaxNum             Int
+  cpaxThroughPaxNum                    Int
+  cpaxUnaccompaniedPaxNum              Int
+  cpaxBaggageWeight                    Int
+  cpaxBaggageNum                       Int
+  passengerDataSource                  String    @db.VarChar(32)
+  locationAreaName                     String    @db.VarChar(255)
+  arrivalAirportShortName              String    @db.VarChar(255)
+  departureAirportShortName            String    @db.VarChar(255)
+  middleAirportShortName               String    @db.VarChar(255)
+  firstDeparturePaxNum                 Int
+  clubDeparturePaxNum                  Int
+  ecoDeparturePaxNum                   Int
+  departurePaxNum                      Int
+  specialServicePaxNum                 Int
+  throughPaxNum                        Int
+  firstBaggageWeight                   Int
+  clubBaggageWeight                    Int
+  ecoBaggageWeight                     Int
+  baggageWeight                        Int
+  baggageNum                           Int
+  unaccompaniedPaxNum                  Int
+  cpaxNumInfo                          String    @db.VarChar(32)
+  pnrPaxNumInfo                        String    @db.VarChar(32)
+  paxNumInfo                           String    @db.VarChar(32)
+  ecoClassCipPaxNumInfo                String    @db.VarChar(32)
+  pilotMemberNum                       Int
+  cabinMemberNum                       Int
+  takeCrewMemberNum                    Int
+  variableTaxiTime                     Int
+  estTaxiInTime                        DateTime  @db.DateTime(3)
+  actTaxiInTime                        DateTime  @db.DateTime(3)
+  crewOwner                            String    @db.VarChar(32)
+  cabinOwner                           String    @db.VarChar(32)
+  carouselNo                           String    @db.VarChar(32)
+  chuteNo                              String    @db.VarChar(32)
+  conveyorNo                           String    @db.VarChar(32)
+  domConn                              Boolean
+  intConn                              Boolean
+  calculatedIntDomType                 String    @db.VarChar(32)
+  estimatedTime                        DateTime  @db.DateTime(3)
+  domGateId                            BigInt?   @db.BigInt
+  domGateName                          String?   @db.VarChar(255)
+  domDebarkationSpotType               String?   @db.VarChar(32)
+  linkedFlightNum                      String?   @db.VarChar(32)
+  linkedFlightNumPassStationTimeMinute Int?
+  linkedFlightRelatedExternalId        String?   @db.VarChar(64)
+  linkedFlightSta                      DateTime? @db.DateTime(3)
+  linkedFlightEta                      DateTime? @db.DateTime(3)
+  linkedFlightAta                      DateTime? @db.DateTime(3)
+  linkedFlightStd                      DateTime? @db.DateTime(3)
+  linkedFlightAtd                      DateTime? @db.DateTime(3)
+  calcTakeOffTime                      DateTime? @db.DateTime(3)
+  calcOffBlockTime                     DateTime? @db.DateTime(3)
+
+  @@unique([uniqueId])
+  @@index([airportCode, flightDate])
+  @@index([flightNum, flightDate])
+  @@map("flights")
+}

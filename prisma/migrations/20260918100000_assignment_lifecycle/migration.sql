@@ -1,0 +1,11 @@
+-- AlterTable
+ALTER TABLE `assignments` ADD COLUMN `acceptedAt` DATETIME(3) NULL,
+    ADD COLUMN `assignedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    ADD COLUMN `releasedAt` DATETIME(3) NULL,
+    ADD COLUMN `status` VARCHAR(32) NOT NULL DEFAULT 'ASSIGNED',
+    ADD COLUMN `updatedAt` DATETIME(3) NULL,
+    ADD COLUMN `version` INTEGER NOT NULL DEFAULT 1;
+
+UPDATE `assignments` SET `updatedAt` = COALESCE(`updateTime`, `createTime`, CURRENT_TIMESTAMP(3));
+
+ALTER TABLE `assignments` MODIFY `updatedAt` DATETIME(3) NOT NULL;

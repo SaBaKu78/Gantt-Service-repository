@@ -1,0 +1,49 @@
+model Assignment {
+  id         BigInt @id @db.UnsignedBigInt // 派遣记录 ID，不是任务 ID
+  taskId     BigInt @db.UnsignedBigInt // 被派遣任务 ID
+  taskTypeId BigInt @db.BigInt // 创建该派遣记录时的任务类型快照
+  way        Int // 派遣方式编码，由业务字典定义
+
+  // 以下 currentResource* 表示“本条派遣记录指向的资源快照”。
+  // 它不表示 Task 当前是否仍由该资源执行；改派后旧记录仍保留原资源。
+  currentResourceId            BigInt    @db.UnsignedBigInt // 本条派遣记录对应的资源 ID
+  currentResourceCode          String    @db.VarChar(32) // 资源编码快照
+  currentResourceName          String    @db.VarChar(255) // 资源名称快照
+  currentResourceDisplayName   String    @db.VarChar(255) // 资源展示名称快照
+  currentResourceExternalId    String    @db.VarChar(64)
+  currentResourceGroupId       BigInt    @db.BigInt
+  currentRelatedResourceId     BigInt    @db.BigInt
+  currentRelatedResourceName   String    @db.VarChar(255)
+  currentRelatedResourceOther  String    @db.VarChar(255)
+  currentRelatedResourceOther2 String    @db.VarChar(255)
+  currentRelatedResourceOther3 String    @db.VarChar(255)
+  currentRelatedResourceOther4 String    @db.VarChar(255)
+  currentRelatedResourceLinkId BigInt?   @db.BigInt
+  currentShiftDailyId          BigInt    @db.UnsignedBigInt // 本条派遣记录使用的班次实例 ID
+  notifyStatus                 Int
+  businessType                 Int
+  departmentId                 Int
+  organizationId               Int
+  updateUserId                 Int
+  updateTime                   DateTime  @db.DateTime(3)
+  createTime                   DateTime  @db.DateTime(3)
+  createUserId                 Int
+  deleted                      Boolean // 数据软删除标记，不等同于释放状态
+  status                       String    @default("ASSIGNED") @db.VarChar(32) // 本条派遣记录的生命周期状态
+  version                      Int       @default(1) // 本条记录的乐观并发版本
+  assignedAt                   DateTime  @default(now()) @db.DateTime(3) // 创建派遣记录的时间
+  acceptedAt                   DateTime? @db.DateTime(3) // 执行人接受派遣的时间
+  releasedAt                   DateTime? @db.DateTime(3) // 本条派遣记录被释放或改派结束的时间
+  updatedAt                    DateTime  @updatedAt @db.DateTime(3) // 本条记录最近更新时间
+  lastRelatedResourceId        BigInt?   @db.BigInt
+  lastRelatedResourceName      String?   @db.VarChar(255)
+
+  task       Task       @relation("TaskAssignments", fields: [taskId], references: [id], onDelete: Cascade) // 派遣记录所属任务
+  resource   Resource   @relation(fields: [currentResourceId], references: [id], onDelete: Restrict)
+  shiftDaily ShiftDaily @relation(fields: [currentShiftDailyId], references: [id], onDelete: Restrict)
+
+  @@index([taskId, deleted])
+  @@index([currentResourceId, deleted])
+  @@index([currentShiftDailyId])
+  @@map("assignments")
+}
