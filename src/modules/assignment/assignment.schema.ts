@@ -33,4 +33,15 @@ export const assignInputSchema = z.object({
   way: z.number().int().optional(),
 })
 
+export const reAssignInputSchema = z.object({
+  taskId: id.transform(BigInt),
+  resourceId: id.transform(BigInt),
+  shiftDailyId: id.transform(BigInt),
+  sourceAssignmentId: id.transform(BigInt),
+  sourceAssignmentVersion: z.number().int().positive(),
+  way: z.number().int().optional()
+})
+
 export type AssignInput = z.infer<typeof assignInputSchema>
+
+export type ReassignInput = z.infer<typeof reAssignInputSchema>

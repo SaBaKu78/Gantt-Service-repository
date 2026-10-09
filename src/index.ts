@@ -8,6 +8,7 @@ import { registerRootContainer } from './container/container'
 import { serializerCompiler, validatorCompiler, ZodTypeProvider } from '@fastify/type-provider-zod'
 import fastifyFormBody from '@fastify/formbody'
 import prismaPlugin from './plugin/prisma-plugin'
+import websocketPlugin from './plugin/websocket-plugin'
 
 const currentFile = fileURLToPath(import.meta.url)
 const currentDir = path.dirname(currentFile)
@@ -21,6 +22,8 @@ export async function build() {
   f.setSerializerCompiler(serializerCompiler)
 
   const app = f.withTypeProvider<ZodTypeProvider>()
+
+  await app.register(websocketPlugin)
 
   app.register(sensible)
 

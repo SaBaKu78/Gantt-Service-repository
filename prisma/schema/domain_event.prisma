@@ -5,16 +5,19 @@ model DomainEvent {
   eventType     String   @db.VarChar(64)
   aggregateType String   @db.VarChar(64)
   aggregateId   BigInt   @db.UnsignedBigInt
+  projectId     String   @db.VarChar(64)
   payload       Json
   occurredAt    DateTime @db.DateTime(3)
-  published     Boolean  @default(false)
+  status        String   @default("PENDING") @db.VarChar(16)
+  nextRetryAt   DateTime?
+   lockToken     String?   @db.VarChar(36)
+  lockedUntil   DateTime?
   publishedAt   DateTime? @db.DateTime(3)
   retryCount    Int      @default(0)
   lastError     String?  @db.Text
   createdAt     DateTime @default(now()) @db.DateTime(3)
 
-  @@index([aggregateType, aggregateId])
-  @@index([eventType, occurredAt])
-  @@index([published, createdAt])
+ @@index([status, nextRetryAt, createdAt])
+  @@index([projectId, occurredAt])
   @@map("domain_events")
 }

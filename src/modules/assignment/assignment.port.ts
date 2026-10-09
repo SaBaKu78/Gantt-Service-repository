@@ -63,16 +63,23 @@ export interface AppendEventInput {
 
 export interface IAssignmentRepository {
   findTaskForUpdateById(taskId: bigint): Promise<AssignmentTask | null>
-  findResourceForUpdateById(resourceId: bigint): Promise<AssignmentResource | null>
+  findResourceForUpdateById(
+    resourceId: bigint,
+  ): Promise<AssignmentResource | null>
   findResource(resourceId: bigint): Promise<AssignmentResource | null>
   findShift(shiftId: bigint): Promise<AssignmentShift | null>
   findAssignmentById(id: bigint): Promise<AssignmentRecord | null>
   findResourceIsConflict(input: {
-    resourceId: bigint,
-    taskId?: bigint,
-    startTime: Date,
+    resourceId: bigint
+    taskId?: bigint
+    startTime: Date
     endTime: Date
   }): Promise<AssignmentRecord | null>
+
+  findAssignmentForUpdate(
+    assignmentId: bigint,
+    taskId: bigint,
+  ): Promise<AssignmentRecord | null>
   create(input: {
     taskId: bigint
     resourceId: bigint
@@ -82,7 +89,12 @@ export interface IAssignmentRepository {
     way?: number
     assignedAt: Date
   }): Promise<AssignmentRecord>
-  transition(id: bigint, fromVersion: number, status: AssignmentStatus, at: Date): Promise<AssignmentRecord>
+  transition(
+    id: bigint,
+    fromVersion: number,
+    status: AssignmentStatus,
+    at: Date,
+  ): Promise<AssignmentRecord>
   setTaskCurrentAssignment(
     taskId: bigint,
     assignment: AssignmentRecord,
@@ -99,4 +111,21 @@ export interface IAssignmentRepository {
 
 export interface IAssignmentRepositoryFactory {
   create(transaction: Prisma.TransactionClient): IAssignmentRepository
+}
+
+export interface ReassignResult {
+  success: true
+  operation: 'REASSIGN'
+
+  taskId: bigint
+
+  sourceAssignmentId: bigint
+  sourceAssignmentVersion: number
+
+  assignmentId: bigint
+  assignmentVersion: number
+
+  resourceId: bigint
+  shiftDailyId: bigint
+  status: AssignmentStatus
 }

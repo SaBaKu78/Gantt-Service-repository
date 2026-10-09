@@ -49,17 +49,21 @@ export class AssignmentRepository implements IAssignmentRepository {
    * Lock the resource row for the duration of the assignment transaction.
    * This serializes concurrent assignments targeting the same resource.
    */
-  async findResourceForUpdateById(resourceId: bigint): Promise<AssignmentResource | null> {
-    const rows = await this.prisma.$queryRaw<Array<{
-      id: bigint
-      code: string
-      name: string
-      displayName: string
-      relatedExternalId: string
-      resourceGroupId: bigint
-      resourceStatus: string
-      displayed: boolean
-    }>>`
+  async findResourceForUpdateById(
+    resourceId: bigint,
+  ): Promise<AssignmentResource | null> {
+    const rows = await this.prisma.$queryRaw<
+      Array<{
+        id: bigint
+        code: string
+        name: string
+        displayName: string
+        relatedExternalId: string
+        resourceGroupId: bigint
+        resourceStatus: string
+        displayed: boolean
+      }>
+    >`
       SELECT id, code, name, displayName, relatedExternalId,
              resourceGroupId, resourceStatus, displayed
       FROM resources
@@ -99,9 +103,9 @@ export class AssignmentRepository implements IAssignmentRepository {
 
   //判断资源是否存在派遣冲突
   async findResourceIsConflict(input: {
-    resourceId: bigint,
-    taskId?: bigint,
-    startTime: Date,
+    resourceId: bigint
+    taskId?: bigint
+    startTime: Date
     endTime: Date
   }): Promise<AssignmentRecord | null> {
     const where: Prisma.AssignmentWhereInput = {
@@ -109,22 +113,48 @@ export class AssignmentRepository implements IAssignmentRepository {
       deleted: false,
       ...(input.taskId === undefined ? {} : { taskId: { not: input.taskId } }),
       status: {
-        in: ['ASSIGNED', 'ACCEPTED', 'WORKING']
+        in: ['ASSIGNED', 'ACCEPTED', 'WORKING'],
       },
       task: {
         deleted: false,
         scheduleStartTime: {
-          lt: input.endTime
+          lt: input.endTime,
         },
         scheduleEndTime: {
-          gt: input.startTime
-        }
-      }
+          gt: input.startTime,
+        },
+      },
     }
     const results = await this.prisma.assignment.findFirst({
-      where
+      where,
     })
     return results ? this.map(results) : null
+  }
+
+  //根据assignId和taskId 查找Assignment并对相应行数据上悲观锁
+  async findAssignmentForUpdate(
+    assignmentId: bigint,
+    taskId: bigint,
+  ): Promise<AssignmentRecord | null> {
+    const rows = await this.prisma.$queryRaw<
+      Array<{
+        id: bigint
+        taskId: bigint
+        currentResourceId: bigint
+        currentShiftDailyId: bigint
+        status: string
+        version: number
+        deleted: boolean
+        assignedAt: Date
+        acceptedAt: Date | null
+        releasedAt: Date | null
+      }>
+    >`SELECT id, taskId, currentResourceId, currentShiftDailyId, 
+      status, version, deleted, assignedAt, accepteAt, releaseAt 
+        FROM assignments 
+        WHERE id=${assignmentId} 
+          AND taskId=${taskId} FOR UPDATE`
+    return rows[0] ? this.map(rows[0]) : null
   }
 
   /**
@@ -159,7 +189,8 @@ export class AssignmentRepository implements IAssignmentRepository {
   }): Promise<AssignmentRecord> {
     const row = await this.prisma.assignment.create({
       data: {
-        id: BigInt(Date.now()) * 1000n + BigInt(Math.floor(Math.random() * 1000)),
+        id:
+          BigInt(Date.now()) * 1000n + BigInt(Math.floor(Math.random() * 1000)),
         taskId: input.taskId,
         taskTypeId: input.taskTypeId ?? 0n,
         way: input.way ?? 0,
@@ -193,7 +224,12 @@ export class AssignmentRepository implements IAssignmentRepository {
     return this.map(row)
   }
 
-  async transition(id: bigint, fromVersion: number, status: AssignmentStatus, at: Date): Promise<AssignmentRecord> {
+  async transition(
+    id: bigint,
+    fromVersion: number,
+    status: AssignmentStatus,
+    at: Date,
+  ): Promise<AssignmentRecord> {
     const result = await this.prisma.assignment.updateMany({
       where: { id, version: fromVersion, deleted: false },
       data: {
@@ -205,9 +241,14 @@ export class AssignmentRepository implements IAssignmentRepository {
       },
     })
     if (result.count !== 1) {
-      throw new AssignmentDomainError('VERSION_CONFLICT', 'Assignment version conflict')
+      throw new AssignmentDomainError(
+        'VERSION_CONFLICT',
+        'Assignment version conflict',
+      )
     }
-    return this.map(await this.prisma.assignment.findUniqueOrThrow({ where: { id } }))
+    return this.map(
+      await this.prisma.assignment.findUniqueOrThrow({ where: { id } }),
+    )
   }
 
   async setTaskCurrentAssignment(
@@ -230,7 +271,10 @@ export class AssignmentRepository implements IAssignmentRepository {
       },
     })
     if (result.count !== 1) {
-      throw new AssignmentDomainError('TASK_ALREADY_ASSIGNED', 'Task assignment state changed')
+      throw new AssignmentDomainError(
+        'TASK_ALREADY_ASSIGNED',
+        'Task assignment state changed',
+      )
     }
   }
 

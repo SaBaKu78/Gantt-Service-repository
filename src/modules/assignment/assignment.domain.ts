@@ -18,7 +18,9 @@ export type AssignmentErrorCode =
   | 'SHIFT_RESOURCE_MISMATCH'
   | 'SHIFT_TIME_MISMATCH'
   | 'TASK_ALREADY_ASSIGNED'
+  | 'TASK_HAS_NOT_BEEN_ASSIGNED'
   | 'RESOURCE_CONFLICT'
+  | 'ASSIGNMENT_CONFLICT'
   | 'INVALID_STATUS_TRANSITION'
   | 'VERSION_CONFLICT'
 
@@ -56,13 +58,11 @@ export function assertStatusTransition(
 export function assertTaskCanBeAssigned(task: {
   deleted: boolean
   locked: boolean
-  currentAssignmentId: bigint | null
   scheduleStartTime: Date
   scheduleEndTime: Date
 } | null): asserts task is {
   deleted: boolean
   locked: boolean
-  currentAssignmentId: bigint | null
   scheduleStartTime: Date
   scheduleEndTime: Date
 } {
@@ -75,11 +75,30 @@ export function assertTaskCanBeAssigned(task: {
   if (task.locked) {
     throw new AssignmentDomainError('TASK_LOCKED', 'Locked tasks cannot be assigned')
   }
-  if (task.currentAssignmentId !== null) {
-    throw new AssignmentDomainError('TASK_ALREADY_ASSIGNED', 'Task already has an active assignment')
-  }
+ 
   if (task.scheduleStartTime >= task.scheduleEndTime) {
     throw new AssignmentDomainError('SHIFT_TIME_MISMATCH', 'Task schedule interval is invalid')
+  }
+}
+
+export function assertTaskIsLeisure(task: {currentAssignmentId: bigint | null}) {
+   if (task.currentAssignmentId !== null) {
+    throw new AssignmentDomainError('TASK_ALREADY_ASSIGNED', 'Task already has an active assignment')
+  }
+}
+
+export function assertTaskAssignmentMatch(task: {currentAssignmentId: bigint | null}, assignmentId: bigint){
+  if(!task.currentAssignmentId){
+    throw new AssignmentDomainError('TASK_HAS_NOT_BEEN_ASSIGNED', 'Task has not been assigned')
+  }
+  if(task.currentAssignmentId !== assignmentId){
+    throw new AssignmentDomainError('VERSION_CONFLICT', 'Task current assignment has changed')
+  }
+}
+
+export function assertAssignmentIsConflict(sourceAssignmentVersion: number, queryAssignmentVersion: number){
+  if(sourceAssignmentVersion !== queryAssignmentVersion){
+    throw new AssignmentDomainError('VERSION_CONFLICT', 'Assignment version conflict')
   }
 }
 
